@@ -4,7 +4,7 @@
   <title>User Page</title>
   <style>
     body {
-      background-color: #f5f5f5; /* Updated background color */
+      background-color: #f5f5f5;
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
@@ -22,33 +22,33 @@
       background-color: #fff;
       border-radius: 8px;
       box-sizing: border-box;
+      text-align: center; /* Center text in the container */
     }
   
     .profile-image {
-      width: 100%;
-      height: auto;
+      width: 150px; /* Adjusted image size */
+      height: 150px; /* Adjusted image size */
       border-radius: 50%;
       display: block;
+      margin: 0 auto; /* Center image */
       margin-bottom: 20px;
+      object-fit: cover; /* Maintain aspect ratio while covering the container */
     }
   
     .username {
-      text-align: center;
       font-size: 28px;
       font-weight: bold;
       margin: 10px 0;
-      color: #333; /* Updated text color */
+      color: #333;
     }
   
     .bio {
-      text-align: center;
       font-size: 16px;
       margin-bottom: 20px;
-      color: #666; /* Updated text color */
+      color: #666;
     }
   
     .follower-count {
-      text-align: center;
       font-size: 18px;
       color: #888;
     }
@@ -60,7 +60,7 @@
     <h2 id="userName" class="username">John Doe</h2>
     <p id="userBio" class="bio">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     <p id="userEmail" class="follower-count">Email: getting</p>
-    <p  class="follower-count">Followers: 1000</p>
+    <p class="follower-count">Followers: 1000</p>
   </div>
 </body>
 
@@ -78,7 +78,7 @@
         const userBio = document.getElementById("userBio")
         userName.innerText=data.username;
         userEmail.innerText=data.email;
-        userBio.innerText=data.bio
+        userBio.innerText=data.bio;
         
        } catch (error) {
             console.log(error.message)

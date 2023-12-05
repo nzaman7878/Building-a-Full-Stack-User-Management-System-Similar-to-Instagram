@@ -1,23 +1,72 @@
-// Importing the mongoose library for MongoDB interactions
-const mongoose = require("mongoose");
+const { UserModel } = require("../model/User.model")
+const bcrypt = require("bcryptjs")
+const mongoose = require("mongoose")
+const JWT = require("jsonwebtoken")
+const e = require("express")
 
-// Loading environment variables from a .env file
-require("dotenv").config();
+// to register user
+exports.userSignUp = async(req,res) => {
+    try {
+        const newUser=await UserModel.create(req.body);
+        res.status(200).send({
+            msg:"SignUp Success"
+        })
+    } catch (error) {
+        res.status(501).send({msg:error.message})
+    }
+}
 
-// Function to connect to the MongoDB database
-const connectDatabase = () => {
-  // Attempt to connect to the MongoDB database using the URL from the environment variables
-  mongoose
-    .connect(process.env.DB_URL)
-    .then((data) => {
-      // Log a success message if the connection is established
-      console.log(`MongoDB connected with server: ${data.connection.host}`);
-    })
-    .catch((err) => {
-      // Log an error message if there is an issue connecting to the database
-      console.log("ERROR while connecting to DB", err.message);
-    });
-};
+// to login user
+exports.userLogin = async(req,res) => {
+    const {username,password} = req.body;
+    try {
+        const getuserData=await UserModel.findOne({username}).select("+password");
+        if(getuserData && getuserData.username ){
+            const result= await bcrypt.compare(password,getuserData.password)
+            if(result){
 
-// Exporting the connectDatabase function for external use
-module.exports = connectDatabase;
+                const token = await getuserData.jwtToken()
+                const cookieOption = {
+                    maxAge: 24 * 60 * 60 * 1000, //24hr
+                    
+                    httpOnly: true //  not able to modify  the cookie in client side
+                  };
+              
+                  res.cookie("token", token, cookieOption);
+                  res.status(200).json({
+                    success: true,
+                    data: getuserData
+                  });
+
+            }else{
+                res.status(404).send({msg:"Password is Incorrect, Try Again!"})
+            }
+        }else{  
+            res.status(404).send({msg:"No Account Found Associated with this username"})
+        }
+
+        
+    } catch (error) {
+        res.status(501).send({msg:error.message})
+    }
+}
+
+
+// get user Details
+
+exports.getUserDetails = async(req,res) => {
+    const {id,username} = req.user;
+
+    try{
+        const userData = await UserModel.findOne({username});
+        res.status(200).send({
+            msg:"Success",
+            data:userData
+        })
+
+    }
+    catch(err){
+        res.status(501).send({msg:err.message})
+    }
+
+}
