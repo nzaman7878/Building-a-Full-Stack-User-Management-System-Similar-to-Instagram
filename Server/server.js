@@ -1,23 +1,25 @@
+// Importing the Express framework
 const express = require("express");
-require("dotenv").config()
-const connectDatabase = require("./config/db");
-const { userRoute } = require("./routes/user.route");
-const cors = require("cors")
-const app = express();
-const cookieParser = require("cookie-parser")
 
-app.use(cors({
-    origin:"http://localhost:5500",
-    credentials:true
-}))
-app.use(cookieParser())
+// Importing user controller functions and middleware
+const { userSignUp, userLogin, getUserDetails } = require("../controller/user.controller");
+const { signupValidator } = require("../middleware/signup.validator");
+const { loginValidator } = require("../middleware/login.validator");
+const { authenticateUser } = require("../middleware/authenticateUser.js");
 
-app.use(express.json())
-app.use("/",userRoute)
+// Creating an Express router for user-related routes
+const userRoute = express.Router();
 
+// Route for user signup with validation middleware
+userRoute.post("/signup", signupValidator, userSignUp);
 
+// Route for user login with validation middleware
+userRoute.post("/login", loginValidator, userLogin);
 
-app.listen(process.env.PORT,async()=>{
-  connectDatabase()
-    console.log("Server Starting on PORT :",process.env.PORT)
-})
+// Route for getting user details with authentication middleware
+userRoute.get("/", authenticateUser, getUserDetails);
+
+// Exporting the userRoute for use in other parts of the application
+module.exports = {
+    userRoute
+};
